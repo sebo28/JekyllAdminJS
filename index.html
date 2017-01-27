@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Jekyll Admin JS</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css">
+	<link rel="stylesheet" href="//ubuntu-tr.github.io/sendeyaz/simplemde.min.css">
+    <link rel="stylesheet" href="//ubuntu-tr.github.io/sendeyaz/sendeyaz.css">
+    <link rel="stylesheet" href="//ubuntu-tr.github.io/extension/markdownCSS/github-markdown.css">
+    <link rel="stylesheet" href="//rawgit.com/mdehoog/Semantic-UI-Calendar/master/dist/calendar.min.css">
+	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script src="//rawgit.com/mdehoog/Semantic-UI-Calendar/master/dist/calendar.min.js"></script>
+
+	<script type="text/javascript" src="https://rawgit.com/nodeca/js-yaml/master/dist/js-yaml.min.js"></script>
+	<script src="//cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+    <script src="//ubuntu-tr.github.io/sendeyaz/simplemde.min.js"></script>
+	<script type="text/javascript" src="github.js"></script>
+	<script type="text/javascript" src="AdminJS.js"></script>
+	<script type="text/javascript" src="JekyllAdminJS.js"></script>
+	
+	<style>
+    	.page {
+    		margin-left: 210px;
+    		display: none;
+    	}
+    	.page > .container {
+    		margin-top: 20px;
+    		padding: 0 10px;
+    	}
+    	.leftRight {
+    		display: flex;
+    		justify-content: space-between;
+    		align-items: center;
+    		flex-wrap: wrap;
+    		margin-bottom: -5px;
+    	}
+    	.leftRight > * {
+    		margin-bottom: 5px !important;
+    	}
+    	.leftRight .input {
+    		width:  auto !important;
+    	}
+    	.ui.form .field label {
+			display: block;
+			margin: 0 0 .28571429rem;
+			color: rgba(0,0,0,.87);
+			font-size: .92857143em;
+			font-weight: 700;
+			text-transform: none;
+		}
+		.transparent > input {
+			color: rgba(0,0,0,.87);
+			font-size: .92857143em;
+			font-weight: 700;
+			text-transform: none;
+		}
+		.border {
+			border: 1px solid rgba(34,36,38,.15);
+			padding: 5px;
+		}
+		.customTemplate {
+			display: none;
+		}
+		.right.sidebar {
+			padding: 0;
+			border: 0;
+		}
+	</style>
+</head>
+<body>
+
+	<div id="menu" class="ui vertical menu animating sidebar visible inverted violet">
+		<img class="ui image" src="https://jekyllrb.com/img/logo-2x.png" />
+		<div class="ui  small header center aligned inverted">Basic</div>
+	</div>
+
+	<div id="loader" class="ui page dimmer active" style="margin: 0;">
+        <div class="ui indeterminate text loader">İşleminiz Gerçekleştiriliyor. Lütfen Bekleyiniz ...</div>
+    </div>
+
+    <div class="ui right overlay animating sidebar segment">
+		<div class="ui menu attached inverted violet">
+			<a class="item">
+				<i class="left arrow icon"></i> Geri
+			</a>
+			<div class="right item">
+				<button class="ui button green attached">Kaydet</button>
+			</div>
+		</div>
+		<form class="ui form segment basic">
+			<h4 class="ui dividing header">Kategori Ekle</h4>
+			<div class="field">
+				<label>Başlık</label>
+				<input type="text" name="first-name" placeholder="First Name">
+			</div>
+		</form>
+	</div>
+
+	<div id="edit" class="page">
+		<div class="ui menu attached inverted violet">
+			<a class="item">
+				<i class="left arrow icon"></i> Geri
+			</a>
+			<div class="right item">
+				<a href="#" id="saveButton" class="ui button green attached">Kaydet</a>
+			</div>
+		</div>
+
+		<div class="ui attached pointing secondary tabMenu menu two item">
+			<a class="item active" data-tab="first">Özellikler</a>
+			<a class="item" data-tab="first2">İçerik</a>
+		</div>
+		<div class="ui bottom attached tab segment active"  data-tab="first">
+			<form class="ui form grid equal width">
+				<div id="edit1" class="column">
+					<h4 class="ui dividing header">Genel Bilgiler</h4>
+				</div>
+				<div class="column">
+					<div id="edit2">
+						<h4 class="ui dividing header">Yayınlama Bilgileri</h4>
+					</div>
+					<br />
+					<div>
+						<h4 class="ui dividing header leftRight">
+							<p>Özel Alanlar</p>
+							<div>
+								<a class="ui label green basic customButton" data-id="input">
+									<i class="add icon"></i> Giriş
+								</a>
+								<a class="ui label orange basic customButton" data-id="array">
+									<i class="add icon"></i> Dizi
+								</a>
+								<a class="ui label blue basic customButton" data-id="object">
+									<i class="add icon"></i> Nesne
+								</a>
+							</div>
+						</h4>
+						<div id="edit0">
+						</div>
+						<br />
+						<div class="customTemplate field" data-id="input">
+							<div class="leftRight">
+								<div class="ui transparent input">
+									<input type="text" placeholder="Yeni Giriş" value="Yeni Giriş">
+								</div>
+								<div>
+									<i class="remove icon red"></i>
+								</div>
+							</div>
+							<input type="text" placeholder="First Name">
+						</div>
+
+						<div class="customTemplate field" data-id="array">
+							<div class="leftRight">
+								<div class="ui transparent input">
+									<input type="text" placeholder="Yeni Dizi" value="Yeni Dizi">
+								</div>
+								<div>
+									<i class="remove icon red"></i>
+								</div>
+							</div>
+							<div class="ui addition multiple search selection dropdown">
+								<input type="hidden">
+								<div class="default text">Yazınız</div>
+							</div>
+						</div>
+						<div class="customTemplate field border" data-id="object">
+							<div class="leftRight">
+								<div class="ui transparent input">
+									<input type="text" placeholder="Yeni Nesne" value="Yeni Nesne">
+								</div>
+								<div>
+									<a class="ui label green basic customButton" data-id="input">
+										<i class="add icon"></i> Giriş
+									</a>
+									<a class="ui label orange basic customButton" data-id="array">
+										<i class="add icon"></i> Dizi
+									</a>
+									<a class="ui label blue basic customButton" data-id="object">
+										<i class="add icon"></i> Nesne
+									</a>
+									<i class="remove icon red"></i>
+								</div>
+							</div>
+							<div class="ui segment basic">
+								<div class="field">
+									<div class="leftRight">
+										<div class="ui transparent input">
+											<input type="text" placeholder="Yeni Giriş" value="Yeni Giriş">
+										</div>
+										<div>
+											<i class="remove icon red"></i>
+										</div>
+									</div>
+									<input type="text" placeholder="First Name">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="ui bottom attached tab segment"  data-tab="first2">
+			<form id="edit3" class="ui form">
+			</form>
+		</div>
+
+	</div>
+
+	<div id="list" class="page">
+		<div class="ui menu attached inverted violet">
+			<div class="item">
+				<i class="sidebar icon"></i>
+			</div>
+			<div class="right item">
+				Admin Panel
+			</div>
+		</div>
+		<div class="ui container">
+			<div class="leftRight">
+				<div class="ui breadcrumb">
+					<a class="section">Home</a>
+					<div class="divider"> / </div>
+					<a class="section">Store</a>
+					<div class="divider"> / </div>
+					<div class="active section">T-Shirt</div>
+				</div>
+
+				<div>
+					<div class="ui button compact basic">
+						<i class="icon upload"></i> 
+						Belge Yükle
+					</div>
+					<div class="ui button compact basic">
+						<i class="icon folder"></i> 
+						Yeni Klasör
+					</div>
+					<div class="ui button compact basic">
+						<i class="icon file"></i> 
+						Yeni Belge
+					</div>
+				</div>
+			</div>
+			<div id="dirs" class="ui horizontal list selection relaxed">
+			</div>
+			<table class="ui celled striped table">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Başlık</th>
+						<th>Kategori</th>
+						<th>Etiketler</th>
+						<th>Yazar</th>
+						<th>Zaman</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="collapsing"><i class="file outline icon"></i></td>
+						<td>Açık Kaynak Güvenlik Duvarı Sistemi</td>
+						<td>Haberler</td>
+						<td>
+							<div class="ui label">Açık Kaynak</div>
+							<div class="ui label">Güvenlik Duvarı</div>
+							<div class="ui label">Güvenlik</div>
+						</td>
+						<td>Yazarın Adı</td>
+						<td>23 Aralık</td>
+						<td class="right aligned">
+							<i class="edit icon"></i>
+							<i class="circle icon green"></i>
+							<i class="remove icon red"></i>
+						</td>
+					</tr>
+					
+				</tbody>
+			</table>
+
+		</div>
+	</div>
+
+</body>
+<script type="text/javascript">
+	$('.tabMenu.menu .item').tab();
+	$('.ui.dropdown.search.addition').dropdown({
+		allowAdditions: true
+	});
+	$('.ui.dropdown:not(.addition)').dropdown();
+	$('.ui.calendar').calendar({
+		monthFirst: false,
+		ampm: false,
+		today: true,
+		text: {
+			days: ['P', 'P', 'S', 'Ç', 'P', 'C', 'C'],
+			months: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+			monthsShort: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+			today: 'Bugün',
+			now: 'Şu an',
+			am: 'ÖÖ',
+			pm: 'ÖS'
+		}
+	}).calendar('set date', new Date());
+
+	$('body').on('click', '#edit.page > .menu:first-child > .item:first-child', function() {
+		$('.page').hide();
+		$('#list.page').show();
+	});
+
+	$('body').on('click', '.customButton', function() {
+		let temp = $(this).attr('data-id');
+		temp = $('.customTemplate[data-id='+temp+']').clone()
+			.removeAttr('data-id').removeClass('customTemplate')[0].outerHTML;
+		$(this).parents('h4').parent().append(temp);
+		$(this).parents('.field').children().last().append(temp);
+	});
+	$('body').on('click', '.field .remove.icon', function() {
+		$(this).closest('.field').remove();
+	});
+	$('body').on('click', '.add.icon', function() {
+		$('.right.sidebar').addClass('visible');
+	});
+	$('.right.sidebar > .menu > .item:first-child').on('click', function() {
+		$('.right.sidebar').removeClass('visible');
+	});
+</script>
+<script>new JekyllAdminJS({ debug: 0 });</script>
+</html>

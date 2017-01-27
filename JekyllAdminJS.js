@@ -1,3 +1,11 @@
+/**
+ * JekyllAdminJS v0.1
+ *
+ * @link   https://github.com/bugra9/JekyllAdminJS
+ * @author bugra9 https://github.com/bugra9
+ * @license GPLv3
+ */
+
 class JekyllAdminJS extends AdminJS {
 
 	constructor(settings = {}) {

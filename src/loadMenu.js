@@ -56,7 +56,7 @@
 			},
 			{
 				title: "Commit",
-				path: "commit()",
+				path: "commit()/",
 				color: "",
 				count: "0"
 			}

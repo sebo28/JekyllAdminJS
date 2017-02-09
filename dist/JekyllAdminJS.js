@@ -228,7 +228,7 @@ var JekyllAdminJS = function (_AdminJS) {
 				html: '<div class="ui  small header center aligned inverted">System</div>'
 			}, {
 				title: "Commit",
-				path: "commit()",
+				path: "commit()/",
 				color: "",
 				count: "0"
 			}];

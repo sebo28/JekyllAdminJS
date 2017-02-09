@@ -1,0 +1,8 @@
+{
+  "framework": "mocha+chai",
+  "src_files": [
+    "lib/*.js",
+    "dist/JekyllAdminJS.js",
+    "dist/test.js"
+  ]
+}

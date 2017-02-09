@@ -4,21 +4,25 @@
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Jekyll Admin JS</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.7/semantic.min.css">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/codemirror.css">
 	<link rel="stylesheet" href="//ubuntu-tr.github.io/sendeyaz/simplemde.min.css">
     <link rel="stylesheet" href="//ubuntu-tr.github.io/sendeyaz/sendeyaz.css">
     <link rel="stylesheet" href="//ubuntu-tr.github.io/extension/markdownCSS/github-markdown.css">
     <link rel="stylesheet" href="//rawgit.com/mdehoog/Semantic-UI-Calendar/master/dist/calendar.min.css">
 	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.7/semantic.min.js"></script>
     <script src="//rawgit.com/mdehoog/Semantic-UI-Calendar/master/dist/calendar.min.js"></script>
-
-	<script type="text/javascript" src="https://rawgit.com/nodeca/js-yaml/master/dist/js-yaml.min.js"></script>
-	<script src="//cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
     <script src="//ubuntu-tr.github.io/sendeyaz/simplemde.min.js"></script>
-	<script type="text/javascript" src="github.js"></script>
-	<script type="text/javascript" src="AdminJS.js"></script>
-	<script type="text/javascript" src="JekyllAdminJS.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/codemirror.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/mode/javascript/javascript.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/mode/css/css.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/mode/htmlmixed/htmlmixed.min.js"></script>
+	<script type="text/javascript" src="lib/js-yaml.min.js"></script>
+	<script src="//cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+	<script type="text/javascript" src="lib/github.js"></script>
+	<script type="text/javascript" src="lib/AdminJS.min.js"></script>
+	<script type="text/javascript" src="dist/JekyllAdminJS.js"></script>
 	
 	<style>
     	.page {
@@ -100,7 +104,7 @@
 
 	<div id="edit" class="page">
 		<div class="ui menu attached inverted violet">
-			<a class="item">
+			<a id="back" class="item">
 				<i class="left arrow icon"></i> Geri
 			</a>
 			<div class="right item">
@@ -109,8 +113,8 @@
 		</div>
 
 		<div class="ui attached pointing secondary tabMenu menu two item">
-			<a class="item active" data-tab="first">Özellikler</a>
-			<a class="item" data-tab="first2">İçerik</a>
+			<a id="attrTab" class="item active" data-tab="first">Özellikler</a>
+			<a id="contentTab" class="item" data-tab="first2">İçerik</a>
 		</div>
 		<div class="ui bottom attached tab segment active"  data-tab="first">
 			<form class="ui form grid equal width">
@@ -237,10 +241,10 @@
 						<i class="icon folder"></i> 
 						Yeni Klasör
 					</div>
-					<div class="ui button compact basic">
+					<a id="newFile" href="#new/" class="ui button compact basic">
 						<i class="icon file"></i> 
 						Yeni Belge
-					</div>
+					</a>
 				</div>
 			</div>
 			<div id="dirs" class="ui horizontal list selection relaxed">
@@ -284,7 +288,6 @@
 
 </body>
 <script type="text/javascript">
-	$('.tabMenu.menu .item').tab();
 	$('.ui.dropdown.search.addition').dropdown({
 		allowAdditions: true
 	});
@@ -304,7 +307,7 @@
 		}
 	}).calendar('set date', new Date());
 
-	$('body').on('click', '#edit.page > .menu:first-child > .item:first-child', function() {
+	$('body').on('click', '#back', function() {
 		$('.page').hide();
 		$('#list.page').show();
 	});
@@ -325,6 +328,159 @@
 	$('.right.sidebar > .menu > .item:first-child').on('click', function() {
 		$('.right.sidebar').removeClass('visible');
 	});
+
+	var editorType;
+	$('body').on('change', '#editorType', function () {
+		if(this.checked)
+			editorType = "markdown";
+		else
+			editorType = "normal";
+
+		$('#contentTab').click();
+	});
+
+	$('.tabMenu.menu .item').tab({ 'onLoad': function(){
+		if(this.dataset.tab != "first2")
+			return;
+		
+		if(editorType === undefined && window.location.href.substr(-2) == 'md')
+			editorType = "markdown";
+		else if(editorType === undefined)
+			editorType = "normal";
+
+		var checked = "";
+		if(editorType == "markdown")
+			checked = "checked";
+		$(".mdEditor").siblings().remove();
+		$(".mdEditor").before( `
+			<div class="leftRight">
+				<div></div>
+				<div class="ui toggle checkbox">
+					<input id="editorType" type="checkbox" ${checked}>
+					<label>Markdown</label>
+				</div>
+			</div>` 
+		);
+		if(editorType == "normal")
+			var editor = CodeMirror.fromTextArea($(".mdEditor")[0], {
+				lineNumbers: true,
+				matchBrackets: true,
+				extraKeys: {"Enter": "newlineAndIndentContinueComment"}
+			});
+		else if(editorType == "markdown")
+		new SimpleMDE(
+		{
+			element: $(".mdEditor")[0],
+			toolbar: ["bold", "italic", "heading-2", "heading-3", "heading-4", 
+				{
+			        name: "definition-list",
+			        action: function(editor){
+			        	var cm = editor.codemirror;
+						var startPoint = cm.getCursor("start");
+						var endPoint = cm.getCursor("end");
+						var text = cm.getSelection();
+						cm.replaceSelection("Tanımlanacak İsim\n: Buraya tanım yazılacak.");
+						cm.setSelection(startPoint, endPoint);
+			        },
+			        className: "fa fa-book",
+			        title: "İsim Tanımlama",
+			    },
+				"|", "quote", "code", "unordered-list", "ordered-list", "|", 
+				"link", 
+				{
+					name: "Resim",
+					title: "Resim ekle",
+					className: "fa fa-picture-o",
+					tagName: "a",
+					action: function(editor){
+						cm = editor.codemirror;
+						$('#imageModal input:text').val('');
+						modalToggle($('#imageModal'));
+
+						if(!$('#imageModal .positive.button').hasClass('ok')) {
+							$('#imageModal .positive.button').addClass('ok');
+							$('#imageModal .positive.button').on('click', function() {
+								$('#imageModal').removeClass('active');$('#imageModal').parent().removeClass('active');
+								var startPoint = cm.getCursor("start");
+								var endPoint = cm.getCursor("end");
+								var text = cm.getSelection();
+								var url = $('#imageModal input:text').val();
+
+								cm.replaceSelection("!["+text+"]("+url+")");
+								cm.setSelection(startPoint, endPoint);
+							});
+						}
+					}
+				}, 
+				"table", "horizontal-rule", "|", "preview", "side-by-side", "fullscreen"
+			],
+			lang: {
+				"bold": "Kalın",
+				"italic": "Eğik",
+				"strikethrough": "",
+				"heading-1": "Başlık 1",
+				"heading-2": "Başlık 2",
+				"heading-3": "Başlık 3",
+				"heading-4": "Başlık 4",
+				"code": "Kod",
+				"quote": "Alıntı",
+				"unordered-list": "Genel Liste",
+				"ordered-list": "Numaralı Liste",
+				"link": "Bağlantı Oluştur",
+				"image": "Resim Ekle",
+				"table": "Tablo Ekle",
+				"horizontal-rule": "Yatay Çizgi Ekle",
+				"preview": "Önizlemeyi Aç/Kapa",
+				"side-by-side": "Yan Önizlemeyi Aç/Kapa",
+				"fullscreen": "Tam Ekran Yap/Çık",
+				"guide": "Rehber",
+				"undo": "Geri Al",
+				"redo": "İleri Al"
+			},
+			promptTexts: {
+				link: "Bağlantı Adresi:",
+				image: "Resim Bağlantısı:",
+				def: "Tanımlanacak İsim:"
+			},
+			insertTexts: {
+				table: ["", "\n\nBaşlık 1 | Başlık 2 | Başlık 3\n:--- | ---: | :---\nYazı | Yazı | Yazı\nYazı | Yazı | Yazı\n\n"]
+			},
+			spellChecker: false,
+			promptURLs: true,
+			autofocus: true,
+			tabSize: 4,
+			previewClassName: "markdown-body",
+			renderingConfig: {
+				singleLineBreaks: false,
+				codeSyntaxHighlighting: true
+			},
+			previewRenderExtend: function(v) {
+				/* Definition Lists*/
+				v = v.replace(
+					/^(<li>|<p>)(.*)\n:[\t| ](.*?[\S\s]*?)(<\/p>|<ul>|<\/li>)$/gmi, 
+					function myFunction(t, tag1, x, y, tag2){
+						if(tag1 == '<p>') {
+						tag1 = '';
+						tag2 = '';
+						}
+						return tag1+'<dl><dt>'+x+'</dt><dd>'+y+'</dd></dl>'+tag2;
+					}
+				);
+				/* Video */
+				v = v.replace(
+					/<a href="https:\/\/www.youtube.com\/embed\/(.*?)">https:\/\/www.youtube.com\/embed\/(.*?)<\/a>/gmi,
+					function myFunction2(t, id) {
+						console.log(t);
+						return '<div class="r16_9"><iframe src="https://www.youtube.com/embed/'+id+'" frameborder="0" allowfullscreen> </iframe></div>';
+					}
+				);
+
+				return v;
+			}
+		});
+		editorType = undefined;
+	}});
+
 </script>
-<script>new JekyllAdminJS({ debug: 0 });</script>
+<script>var jaJS = new JekyllAdminJS({ debug: 0 }); jaJS.run();</script>
 </html>

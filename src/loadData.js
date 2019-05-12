@@ -1,7 +1,7 @@
 
 	// Üzerine yazılan fonksiyonlar
 	loadData() {
-		this.github = new Github('', localStorage.token, 'bugra9/bugra9.github.io/master');	
+		this.github = new Github('', localStorage.token, 'sebo28/sebo28.github.io/dal');	
 		this.data = [];
 		var tree = this.getTree();
 		for(var i in tree) {
